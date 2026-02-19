@@ -1,0 +1,76 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+  <div class="w-full max-w-xl bg-white shadow-xl rounded-2xl p-8">
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Cesar and Atbash Encryption</h1>
+
+    <!-- Algorithm -->
+    <div class="flex flex-col gap-2 mb-5">
+      <label for="algorithm" class="font-semibold text-gray-700"> Select Algorithm: </label>
+
+      <select
+        id="algorithm"
+        [ngModel]="type()"
+        (ngModelChange)="setType($event)"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <option value="cesar">Cesar Cipher</option>
+        <option value="atbash">Atbash Cipher</option>
+      </select>
+    </div>
+
+    <!-- Input Text -->
+    <div class="flex flex-col gap-2 mb-5">
+      <label for="inputText" class="font-semibold text-gray-700"> Input Text: </label>
+
+      <textarea
+        id="inputText"
+        [ngModel]="text()"
+        (ngModelChange)="setText($event)"
+        class="w-full p-2 border border-gray-300 rounded-lg min-h-25 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+      ></textarea>
+    </div>
+
+    @if (type() == 'cesar') {
+      <!-- Deplacement -->
+      <div class="flex flex-col gap-2 mb-6">
+        <label for="key" class="font-semibold text-gray-700"> Deplacement: </label>
+
+        <input
+          id="key"
+          type="number"
+          [ngModel]="desplacement()"
+          (ngModelChange)="setDesplacement($event)"
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+    }
+
+    <!-- Buttons -->
+    <div class="flex gap-4 mb-6">
+      <button
+        (click)="encrypt()"
+        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+      >
+        Encrypt
+      </button>
+
+      <button
+        (click)="decrypt()"
+        class="w-full bg-red-600 text-white font-semibold py-2 rounded-lg hover:bg-red-700 transition duration-200"
+      >
+        Decrypt
+      </button>
+    </div>
+
+    <!-- Output -->
+    <div class="flex flex-col gap-2">
+      <label for="outputText" class="font-semibold text-gray-700"> Output Text: </label>
+
+      <textarea
+        id="outputText"
+        [value]="outputText()"
+        readonly
+        class="w-full p-2 border border-gray-300 rounded-lg min-h-25 resize-none bg-gray-100 text-gray-700 focus:outline-none"
+      ></textarea>
+    </div>
+  </div>
+</div>
