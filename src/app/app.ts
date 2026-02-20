@@ -1,15 +1,22 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EncryptionService } from './services/encryption.service';
-
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faLock, faCodeBranch, faBook, faLink } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-root',
-  imports: [FormsModule],
+  imports: [FormsModule, FontAwesomeModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
+  facodeBranch = faCodeBranch;
+  faLock = faLock;
+  faLink = faLink;
+  faBook = faBook;
+
   type = signal<'cesar' | 'atbash'>('cesar');
+  showModal = signal(false);
   desplacement = signal<number>(0);
   text = signal<string>('');
   outputText = signal<string>('');
@@ -42,5 +49,12 @@ export class App {
 
   setDesplacement(value: string) {
     this.desplacement.set(Number(value) || 0);
+  }
+  openModal() {
+    this.showModal.set(true);
+  }
+
+  closeModal() {
+    this.showModal.set(false);
   }
 }

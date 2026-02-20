@@ -1,60 +1,81 @@
-# Encryption
+# Encryption App
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
+A modern Angular application that provides text encryption and decryption using the Cesar Cipher and Atbash Cipher algorithms. The application features a clean dark-mode interface, built with Angular Signals and styled using TailwindCSS. It is deployed via GitHub Pages.
 
-## Development server
+---
 
-To start a local development server, run:
+## Overview
+
+This project demonstrates the implementation of two classical substitution ciphers:
+
+- Cesar Cipher (shift cipher)
+- Atbash Cipher
+
+The application allows users to input text, select the desired algorithm, define a shift value (for Cesar), and generate encrypted or decrypted output instantly.
+
+---
+
+## Algorithms
+
+### Cesar Cipher
+
+The Cesar Cipher shifts each alphabetic character by a fixed number of positions in the alphabet, defined as the "deplacement" (shift value).
+
+Example with a shift of 3:
+
+| Original | Encrypted |
+| -------- | --------- |
+| A        | D         |
+| B        | E         |
+| C        | F         |
+
+Key characteristics:
+
+- Supports both uppercase and lowercase letters.
+- Preserves letter casing.
+- Non-alphabetic characters remain unchanged.
+- Decryption reverses the shift using modular arithmetic.
+
+Encryption formula:
+
+Encrypted = (charCode - base + shift) % 26 + base
+
+---
+
+### Atbash Cipher
+
+The Atbash Cipher is a substitution cipher that replaces each letter with its opposite in the alphabet.
+
+Example:
+
+| Original | Encrypted |
+| -------- | --------- |
+| A        | Z         |
+| B        | Y         |
+| C        | X         |
+
+Key characteristics:
+
+- Symmetric cipher (encryption and decryption are identical).
+- Preserves uppercase and lowercase letters.
+- Non-alphabetic characters remain unchanged.
+
+---
+
+## Technology Stack
+
+- Angular (Standalone Components and Signals)
+- TypeScript
+- TailwindCSS
+- GitHub Pages (Deployment)
+
+---
+
+## Installation and Development
+
+Clone the repository:
 
 ```bash
-ng serve
+git clone https://github.com/LuisFloresMtz/encryption.git
+cd encryption
 ```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-# encryption
