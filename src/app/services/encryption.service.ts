@@ -4,87 +4,85 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class EncryptionService {
-  CesarEncryption(desplacement: number, text: string): string {
+  // CesarEncryption shifts characters by a specified amount within a custom alphabet.
+  CesarEncryption(desplacement: number, text: string, alphabet: string): string {
     let result = '';
+    const length = alphabet.length;
 
-    // Normalize shift value to stay within 0–25 range
-    // This prevents overflow and handles negative values
-    desplacement = ((desplacement % 26) + 26) % 26;
+    // Normalize shift within alphabet length
+    desplacement = ((desplacement % length) + length) % length;
 
-    // Iterate through each character in the input text
-    for (let i = 0; i < text.length; i++) {
-      const charCode = text.charCodeAt(i);
+    for (let char of text) {
+      const isUpper = char === char.toUpperCase();
+      const upperChar = char.toUpperCase();
 
-      // Check if character is uppercase (ASCII 65–90)
-      if (charCode >= 65 && charCode <= 90) {
-        // Apply shift within uppercase range
-        result += String.fromCharCode(((charCode - 65 + desplacement) % 26) + 65);
-      }
-      // Check if character is lowercase (ASCII 97–122)
-      else if (charCode >= 97 && charCode <= 122) {
-        // Apply shift within lowercase range
-        result += String.fromCharCode(((charCode - 97 + desplacement) % 26) + 97);
+      // Find position in custom alphabet
+      const index = alphabet.indexOf(upperChar);
+
+      if (index !== -1) {
+        // Calculate new shifted index
+        const newIndex = (index + desplacement) % length;
+        const newChar = alphabet[newIndex];
+
+        // Preserve original casing
+        result += isUpper ? newChar : newChar.toLowerCase();
       } else {
-        // Preserve non-alphabetic characters (spaces, symbols, numbers)
-        result += text.charAt(i);
+        // Preserve characters not in alphabet
+        result += char;
       }
     }
 
     return result;
   }
 
-  CesarDecryption(desplacement: number, text: string): string {
+  // CesarDecryption reverses the shift applied by CesarEncryption.
+  CesarDecryption(desplacement: number, text: string, alphabet: string): string {
     let result = '';
+    const length = alphabet.length;
 
-    // Normalize shift value
-    desplacement = ((desplacement % 26) + 26) % 26;
+    desplacement = ((desplacement % length) + length) % length;
 
-    for (let i = 0; i < text.length; i++) {
-      const charCode = text.charCodeAt(i);
+    for (let char of text) {
+      const isUpper = char === char.toUpperCase();
+      const upperChar = char.toUpperCase();
+      const index = alphabet.indexOf(upperChar);
 
-      // Uppercase letters
-      if (charCode >= 65 && charCode <= 90) {
-        // Reverse shift by subtracting displacement
-        result += String.fromCharCode(((charCode - 65 - desplacement + 26) % 26) + 65);
-      }
-      // Lowercase letters
-      else if (charCode >= 97 && charCode <= 122) {
-        result += String.fromCharCode(((charCode - 97 - desplacement + 26) % 26) + 97);
+      if (index !== -1) {
+        const newIndex = (index - desplacement + length) % length;
+        const newChar = alphabet[newIndex];
+
+        result += isUpper ? newChar : newChar.toLowerCase();
       } else {
-        // Preserve non-alphabetic characters
-        result += text.charAt(i);
+        result += char;
       }
     }
 
     return result;
   }
 
-  AtbashEncryption(text: string): string {
+  // AtbashEncryption maps each character to its reverse position in the custom alphabet.
+  AtbashEncryption(text: string, alphabet: string): string {
     let result = '';
+    const length = alphabet.length;
 
-    for (let i = 0; i < text.length; i++) {
-      const charCode = text.charCodeAt(i);
+    for (let char of text) {
+      const isUpper = char === char.toUpperCase();
+      const upperChar = char.toUpperCase();
+      const index = alphabet.indexOf(upperChar);
 
-      // Uppercase letters
-      if (charCode >= 65 && charCode <= 90) {
-        // Mirror transformation within uppercase alphabet
-        result += String.fromCharCode(90 - (charCode - 65));
-      }
-      // Lowercase letters
-      else if (charCode >= 97 && charCode <= 122) {
-        // Mirror transformation within lowercase alphabet
-        result += String.fromCharCode(122 - (charCode - 97));
+      if (index !== -1) {
+        const newChar = alphabet[length - 1 - index];
+        result += isUpper ? newChar : newChar.toLowerCase();
       } else {
-        // Preserve non-alphabetic characters
-        result += text.charAt(i);
+        result += char;
       }
     }
 
     return result;
   }
 
-  // Decryption for Atbash is identical to encryption
-  AtbashDecryption(text: string): string {
-    return this.AtbashEncryption(text);
+  // AtbashDecryption is identical to AtbashEncryption since the transformation is symmetrical.
+  AtbashDecryption(text: string, alphabet: string): string {
+    return this.AtbashEncryption(text, alphabet);
   }
 }

@@ -15,62 +15,87 @@ export class App {
   faLink = faLink;
   faBook = faBook;
 
+  // Default alphabet
+  alphabet = signal<string>('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+
+  // Selected algorithm
   type = signal<'cesar' | 'atbash'>('cesar');
+
+  // Modal visibility
   showModal = signal(false);
+
+  // Shift value for Cesar
   desplacement = signal<number>(0);
+
+  // Input text
   text = signal<string>('');
+
+  // Output text
   outputText = signal<string>('');
 
   constructor(private encryptionService: EncryptionService) {}
 
-  // Updates the selected encryption type (Cesar or Atbash)
+  // Updates selected algorithm
   setType(value: string) {
-    // Casts the value to the allowed union type
     this.type.set(value as 'cesar' | 'atbash');
   }
-
-  // Executes encryption based on selected algorithm
+  // Executes encryption
   encrypt() {
-    // Check which algorithm is selected
     if (this.type() === 'cesar') {
-      // Calls Cesar encryption with shift value and input text
-      this.outputText.set(this.encryptionService.CesarEncryption(this.desplacement(), this.text()));
+      this.outputText.set(
+        this.encryptionService.CesarEncryption(
+          this.desplacement(),
+          this.text(),
+          this.alphabet()
+        )
+      );
     } else {
-      // Calls Atbash encryption (no shift required)
-      this.outputText.set(this.encryptionService.AtbashEncryption(this.text()));
+      this.outputText.set(
+        this.encryptionService.AtbashEncryption(
+          this.text(),
+          this.alphabet()
+        )
+      );
     }
   }
 
-  // Executes decryption based on selected algorithm
+  // Executes decryption
   decrypt() {
-    // Check which algorithm is selected
     if (this.type() === 'cesar') {
-      // Calls Cesar decryption (reverse shift)
-      this.outputText.set(this.encryptionService.CesarDecryption(this.desplacement(), this.text()));
+      this.outputText.set(
+        this.encryptionService.CesarDecryption(
+          this.desplacement(),
+          this.text(),
+          this.alphabet()
+        )
+      );
     } else {
-      // Atbash decryption is identical to encryption
-      this.outputText.set(this.encryptionService.AtbashDecryption(this.text()));
+      this.outputText.set(
+        this.encryptionService.AtbashDecryption(
+          this.text(),
+          this.alphabet()
+        )
+      );
     }
   }
 
-  // Updates the input text signal
+  // Updates alphabet
+  setAlphabet(value: string) {
+    this.alphabet.set(value.toUpperCase());
+  }
+
   setText(value: string) {
     this.text.set(value);
   }
 
-  // Updates and normalizes the shift value
   setDesplacement(value: string) {
-    // Converts string input to number
-    // Defaults to 0 if invalid
     this.desplacement.set(Number(value) || 0);
   }
 
-  // Opens the documentation modal
   openModal() {
     this.showModal.set(true);
   }
 
-  // Closes the documentation modal
   closeModal() {
     this.showModal.set(false);
   }
