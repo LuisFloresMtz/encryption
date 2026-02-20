@@ -71,79 +71,195 @@ Characteristics:
 
 ---
 
-## Project Architecture
-
-The application follows a layered structure:
-
-**Presentation Layer**
-
-- Angular Standalone Component
-- HTML Template
-- TailwindCSS Styling
-
-**Business Logic Layer**
-
-- EncryptionService
-
-**State Management**
-
-- Angular Signals
-
----
-
 # Code Documentation
 
 ## App Component (`app.component.ts`)
 
-The App component manages state and user interaction.
+The App component manages state and user interaction. It connects the UI with the `EncryptionService` and uses Angular Signals for reactive state management.
 
 ```ts
-import { Component, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { EncryptionService } from './services/encryption.service';
+// Updates the selected encryption type (Cesar or Atbash)
+setType(value: string) {
+  // Casts the value to the allowed union type
+  this.type.set(value as 'cesar' | 'atbash');
+}
 
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './app.html',
-  styleUrls: ['./app.css'],
-})
-export class App {
-  title = signal('Cesar and Atbash Encryption');
-  type = signal<'cesar' | 'atbash'>('cesar');
-  desplacement = signal<number>(0);
-  text = signal<string>('');
-  outputText = signal<string>('');
+// Executes encryption based on selected algorithm
+encrypt() {
+  // Check which algorithm is selected
+  if (this.type() === 'cesar') {
 
-  constructor(private encryptionService: EncryptionService) {}
+    // Calls Cesar encryption with shift value and input text
+    this.outputText.set(
+      this.encryptionService.CesarEncryption(
+        this.desplacement(),
+        this.text()
+      )
+    );
 
-  encrypt() {
-    if (this.type() === 'cesar') {
-      this.outputText.set(this.encryptionService.CesarEncryption(this.desplacement(), this.text()));
-    } else {
-      this.outputText.set(this.encryptionService.AtbashEncryption(this.text()));
-    }
-  }
+  } else {
 
-  decrypt() {
-    if (this.type() === 'cesar') {
-      this.outputText.set(this.encryptionService.CesarDecryption(this.desplacement(), this.text()));
-    } else {
-      this.outputText.set(this.encryptionService.AtbashDecryption(this.text()));
-    }
-  }
-
-  setType(value: string) {
-    this.type.set(value as 'cesar' | 'atbash');
-  }
-
-  setText(value: string) {
-    this.text.set(value);
-  }
-
-  setDesplacement(value: string) {
-    this.desplacement.set(Number(value) || 0);
+    // Calls Atbash encryption (no shift required)
+    this.outputText.set(
+      this.encryptionService.AtbashEncryption(
+        this.text()
+      )
+    );
   }
 }
+
+// Executes decryption based on selected algorithm
+decrypt() {
+  // Check which algorithm is selected
+  if (this.type() === 'cesar') {
+
+    // Calls Cesar decryption (reverse shift)
+    this.outputText.set(
+      this.encryptionService.CesarDecryption(
+        this.desplacement(),
+        this.text()
+      )
+    );
+
+  } else {
+
+    // Atbash decryption is identical to encryption
+    this.outputText.set(
+      this.encryptionService.AtbashDecryption(
+        this.text()
+      )
+    );
+  }
+}
+
+// Updates the input text signal
+setText(value: string) {
+  this.text.set(value);
+}
+
+// Updates and normalizes the shift value
+setDesplacement(value: string) {
+  // Converts string input to number
+  // Defaults to 0 if invalid
+  this.desplacement.set(Number(value) || 0);
+}
+```
+
+## Encryption Service(`encryption.service.ts`)
+
+The EncryptionService contains the core encryption logic.
+It is provided at the root level, making it available throughout the application.
+
+```ts
+// Encrypts text using the Cesar Cipher
+  CesarEncryption(desplacement: number, text: string): string {
+    let result = '';
+
+    // Normalize shift to avoid overflow or negative values
+    desplacement = ((desplacement % 26) + 26) % 26;
+
+    // Iterate over each character in the input text
+    for (let i = 0; i < text.length; i++) {
+      const charCode = text.charCodeAt(i);
+
+      // Uppercase letters (A-Z ASCII range)
+      if (charCode >= 65 && charCode <= 90) {
+
+        // Apply shift within uppercase range
+        result += String.fromCharCode(
+          ((charCode - 65 + desplacement) % 26) + 65
+        );
+
+      }
+      // Lowercase letters (a-z ASCII range)
+      else if (charCode >= 97 && charCode <= 122) {
+
+        // Apply shift within lowercase range
+        result += String.fromCharCode(
+          ((charCode - 97 + desplacement) % 26) + 97
+        );
+
+      }
+      else {
+        // Keep non-alphabetic characters unchanged
+        result += text.charAt(i);
+      }
+    }
+
+    return result;
+  }
+
+  // Decrypts text using the Cesar Cipher
+  CesarDecryption(desplacement: number, text: string): string {
+    let result = '';
+
+    // Normalize shift value
+    desplacement = ((desplacement % 26) + 26) % 26;
+
+    for (let i = 0; i < text.length; i++) {
+      const charCode = text.charCodeAt(i);
+
+      // Uppercase letters
+      if (charCode >= 65 && charCode <= 90) {
+
+        // Reverse shift (subtract instead of add)
+        result += String.fromCharCode(
+          ((charCode - 65 - desplacement + 26) % 26) + 65
+        );
+
+      }
+      // Lowercase letters
+      else if (charCode >= 97 && charCode <= 122) {
+
+        result += String.fromCharCode(
+          ((charCode - 97 - desplacement + 26) % 26) + 97
+        );
+
+      }
+      else {
+        // Preserve non-alphabetic characters
+        result += text.charAt(i);
+      }
+    }
+
+    return result;
+  }
+
+  // Encrypts text using Atbash Cipher
+  AtbashEncryption(text: string): string {
+    let result = '';
+
+    for (let i = 0; i < text.length; i++) {
+      const charCode = text.charCodeAt(i);
+
+      // Uppercase letters
+      if (charCode >= 65 && charCode <= 90) {
+
+        // Replace with opposite letter in alphabet
+        result += String.fromCharCode(
+          90 - (charCode - 65)
+        );
+
+      }
+      // Lowercase letters
+      else if (charCode >= 97 && charCode <= 122) {
+
+        result += String.fromCharCode(
+          122 - (charCode - 97)
+        );
+
+      }
+      else {
+        // Preserve non-alphabetic characters
+        result += text.charAt(i);
+      }
+    }
+
+    return result;
+  }
+
+  // Decryption for Atbash is identical to encryption
+  AtbashDecryption(text: string): string {
+    return this.AtbashEncryption(text);
+  }
 ```
