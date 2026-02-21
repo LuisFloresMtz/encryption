@@ -4,30 +4,126 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class EncryptionService {
-  // CesarEncryption shifts characters by a specified amount within a custom alphabet.
+
   CesarEncryption(desplacement: number, text: string, alphabet: string): string {
+
+    // If default alphabet → use ASCII logic
+    if (alphabet === 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+      return this.cesarAsciiEncrypt(desplacement, text);
+    }
+
+    // Otherwise → custom alphabet mode
+    return this.cesarCustomEncrypt(desplacement, text, alphabet);
+  }
+
+  CesarDecryption(desplacement: number, text: string, alphabet: string): string {
+
+    if (alphabet === 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+      return this.cesarAsciiDecrypt(desplacement, text);
+    }
+
+    return this.cesarCustomDecrypt(desplacement, text, alphabet);
+  }
+
+  AtbashEncryption(text: string, alphabet: string): string {
+
+    if (alphabet === 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+      return this.atbashAscii(text);
+    }
+
+    return this.atbashCustom(text, alphabet);
+  }
+
+  AtbashDecryption(text: string, alphabet: string): string {
+    return this.AtbashEncryption(text, alphabet);
+  }
+
+
+  private cesarAsciiEncrypt(desplacement: number, text: string): string {
+
+    let result = '';
+    desplacement = ((desplacement % 26) + 26) % 26;
+
+    for (let i = 0; i < text.length; i++) {
+
+      const code = text.charCodeAt(i);
+
+      if (code >= 65 && code <= 90) {
+        result += String.fromCharCode(((code - 65 + desplacement) % 26) + 65);
+      }
+      else if (code >= 97 && code <= 122) {
+        result += String.fromCharCode(((code - 97 + desplacement) % 26) + 97);
+      }
+      else {
+        result += text[i];
+      }
+    }
+
+    return result;
+  }
+
+  private cesarAsciiDecrypt(desplacement: number, text: string): string {
+
+    let result = '';
+    desplacement = ((desplacement % 26) + 26) % 26;
+
+    for (let i = 0; i < text.length; i++) {
+
+      const code = text.charCodeAt(i);
+
+      if (code >= 65 && code <= 90) {
+        result += String.fromCharCode(((code - 65 - desplacement + 26) % 26) + 65);
+      }
+      else if (code >= 97 && code <= 122) {
+        result += String.fromCharCode(((code - 97 - desplacement + 26) % 26) + 97);
+      }
+      else {
+        result += text[i];
+      }
+    }
+
+    return result;
+  }
+
+  private atbashAscii(text: string): string {
+
+    let result = '';
+
+    for (let i = 0; i < text.length; i++) {
+
+      const code = text.charCodeAt(i);
+
+      if (code >= 65 && code <= 90) {
+        result += String.fromCharCode(90 - (code - 65));
+      }
+      else if (code >= 97 && code <= 122) {
+        result += String.fromCharCode(122 - (code - 97));
+      }
+      else {
+        result += text[i];
+      }
+    }
+
+    return result;
+  }
+
+  private cesarCustomEncrypt(desplacement: number, text: string, alphabet: string): string {
+
     let result = '';
     const length = alphabet.length;
-
-    // Normalize shift within alphabet length
     desplacement = ((desplacement % length) + length) % length;
 
     for (let char of text) {
+
       const isUpper = char === char.toUpperCase();
       const upperChar = char.toUpperCase();
-
-      // Find position in custom alphabet
       const index = alphabet.indexOf(upperChar);
 
       if (index !== -1) {
-        // Calculate new shifted index
         const newIndex = (index + desplacement) % length;
         const newChar = alphabet[newIndex];
-
-        // Preserve original casing
         result += isUpper ? newChar : newChar.toLowerCase();
       } else {
-        // Preserve characters not in alphabet
         result += char;
       }
     }
@@ -35,14 +131,14 @@ export class EncryptionService {
     return result;
   }
 
-  // CesarDecryption reverses the shift applied by CesarEncryption.
-  CesarDecryption(desplacement: number, text: string, alphabet: string): string {
+  private cesarCustomDecrypt(desplacement: number, text: string, alphabet: string): string {
+
     let result = '';
     const length = alphabet.length;
-
     desplacement = ((desplacement % length) + length) % length;
 
     for (let char of text) {
+
       const isUpper = char === char.toUpperCase();
       const upperChar = char.toUpperCase();
       const index = alphabet.indexOf(upperChar);
@@ -50,7 +146,6 @@ export class EncryptionService {
       if (index !== -1) {
         const newIndex = (index - desplacement + length) % length;
         const newChar = alphabet[newIndex];
-
         result += isUpper ? newChar : newChar.toLowerCase();
       } else {
         result += char;
@@ -60,12 +155,13 @@ export class EncryptionService {
     return result;
   }
 
-  // AtbashEncryption maps each character to its reverse position in the custom alphabet.
-  AtbashEncryption(text: string, alphabet: string): string {
+  private atbashCustom(text: string, alphabet: string): string {
+
     let result = '';
     const length = alphabet.length;
 
     for (let char of text) {
+
       const isUpper = char === char.toUpperCase();
       const upperChar = char.toUpperCase();
       const index = alphabet.indexOf(upperChar);
@@ -79,10 +175,5 @@ export class EncryptionService {
     }
 
     return result;
-  }
-
-  // AtbashDecryption is identical to AtbashEncryption since the transformation is symmetrical.
-  AtbashDecryption(text: string, alphabet: string): string {
-    return this.AtbashEncryption(text, alphabet);
   }
 }
