@@ -43,39 +43,19 @@ export class App {
   encrypt() {
     if (this.type() === 'cesar') {
       this.outputText.set(
-        this.encryptionService.CesarEncryption(
-          this.desplacement(),
-          this.text(),
-          this.alphabet()
-        )
+        this.encryptionService.CesarEncryption(this.desplacement(), this.text(), this.alphabet()),
       );
     } else {
-      this.outputText.set(
-        this.encryptionService.AtbashEncryption(
-          this.text(),
-          this.alphabet()
-        )
-      );
+      this.outputText.set(this.encryptionService.AtbashEncryption(this.text(), this.alphabet()));
     }
   }
 
   // Executes decryption
   decrypt() {
     if (this.type() === 'cesar') {
-      this.outputText.set(
-        this.encryptionService.CesarDecryption(
-          this.desplacement(),
-          this.text(),
-          this.alphabet()
-        )
-      );
+      this.outputText.set(this.encryptionService.CesarDecryption(this.text(), this.alphabet()));
     } else {
-      this.outputText.set(
-        this.encryptionService.AtbashDecryption(
-          this.text(),
-          this.alphabet()
-        )
-      );
+      this.outputText.set(this.encryptionService.AtbashDecryption(this.text(), this.alphabet()));
     }
   }
 

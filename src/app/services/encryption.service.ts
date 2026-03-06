@@ -4,9 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class EncryptionService {
-
   CesarEncryption(desplacement: number, text: string, alphabet: string): string {
-
     // If default alphabet → use ASCII logic
     if (alphabet === 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
       return this.cesarAsciiEncrypt(desplacement, text);
@@ -16,17 +14,62 @@ export class EncryptionService {
     return this.cesarCustomEncrypt(desplacement, text, alphabet);
   }
 
-  CesarDecryption(desplacement: number, text: string, alphabet: string): string {
+  CesarDecryption(text: string, alphabet: string): string {
+    let bestResult = '';
+    let bestScore = -1;
 
-    if (alphabet === 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
-      return this.cesarAsciiDecrypt(desplacement, text);
+    const commonWords = [
+      'THE',
+      'AND',
+      'LA',
+      'EL',
+      'DE',
+      'HOLA',
+      'Y',
+      'EN',
+      'A',
+      'TO',
+      'OF',
+      'QUE',
+      'IS',
+      'IN',
+      'IT',
+      'YOU',
+      'FOR',
+      'ON',
+    ];
+    const maxShift = alphabet.length;
+
+    for (let desplacement = 0; desplacement < maxShift; desplacement++) {
+      const decrypted =
+        alphabet === 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+          ? this.cesarAsciiDecrypt(desplacement, text)
+          : this.cesarCustomDecrypt(desplacement, text, alphabet);
+
+      let score = 0;
+      const upperText = decrypted.toUpperCase();
+
+      for (const word of commonWords) {
+        if (upperText.includes(word)) {
+          score++;
+        }
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestResult = decrypted;
+      }
+
+      // fallback en caso de no encontrar coincidencias
+      if (desplacement === 0) {
+        bestResult = decrypted;
+      }
     }
 
-    return this.cesarCustomDecrypt(desplacement, text, alphabet);
+    return bestResult;
   }
 
   AtbashEncryption(text: string, alphabet: string): string {
-
     if (alphabet === 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
       return this.atbashAscii(text);
     }
@@ -38,23 +81,18 @@ export class EncryptionService {
     return this.AtbashEncryption(text, alphabet);
   }
 
-
   private cesarAsciiEncrypt(desplacement: number, text: string): string {
-
     let result = '';
     desplacement = ((desplacement % 26) + 26) % 26;
 
     for (let i = 0; i < text.length; i++) {
-
       const code = text.charCodeAt(i);
 
       if (code >= 65 && code <= 90) {
         result += String.fromCharCode(((code - 65 + desplacement) % 26) + 65);
-      }
-      else if (code >= 97 && code <= 122) {
+      } else if (code >= 97 && code <= 122) {
         result += String.fromCharCode(((code - 97 + desplacement) % 26) + 97);
-      }
-      else {
+      } else {
         result += text[i];
       }
     }
@@ -63,21 +101,17 @@ export class EncryptionService {
   }
 
   private cesarAsciiDecrypt(desplacement: number, text: string): string {
-
     let result = '';
     desplacement = ((desplacement % 26) + 26) % 26;
 
     for (let i = 0; i < text.length; i++) {
-
       const code = text.charCodeAt(i);
 
       if (code >= 65 && code <= 90) {
         result += String.fromCharCode(((code - 65 - desplacement + 26) % 26) + 65);
-      }
-      else if (code >= 97 && code <= 122) {
+      } else if (code >= 97 && code <= 122) {
         result += String.fromCharCode(((code - 97 - desplacement + 26) % 26) + 97);
-      }
-      else {
+      } else {
         result += text[i];
       }
     }
@@ -86,20 +120,16 @@ export class EncryptionService {
   }
 
   private atbashAscii(text: string): string {
-
     let result = '';
 
     for (let i = 0; i < text.length; i++) {
-
       const code = text.charCodeAt(i);
 
       if (code >= 65 && code <= 90) {
         result += String.fromCharCode(90 - (code - 65));
-      }
-      else if (code >= 97 && code <= 122) {
+      } else if (code >= 97 && code <= 122) {
         result += String.fromCharCode(122 - (code - 97));
-      }
-      else {
+      } else {
         result += text[i];
       }
     }
@@ -108,13 +138,11 @@ export class EncryptionService {
   }
 
   private cesarCustomEncrypt(desplacement: number, text: string, alphabet: string): string {
-
     let result = '';
     const length = alphabet.length;
     desplacement = ((desplacement % length) + length) % length;
 
     for (let char of text) {
-
       const isUpper = char === char.toUpperCase();
       const upperChar = char.toUpperCase();
       const index = alphabet.indexOf(upperChar);
@@ -132,13 +160,11 @@ export class EncryptionService {
   }
 
   private cesarCustomDecrypt(desplacement: number, text: string, alphabet: string): string {
-
     let result = '';
     const length = alphabet.length;
     desplacement = ((desplacement % length) + length) % length;
 
     for (let char of text) {
-
       const isUpper = char === char.toUpperCase();
       const upperChar = char.toUpperCase();
       const index = alphabet.indexOf(upperChar);
@@ -156,12 +182,10 @@ export class EncryptionService {
   }
 
   private atbashCustom(text: string, alphabet: string): string {
-
     let result = '';
     const length = alphabet.length;
 
     for (let char of text) {
-
       const isUpper = char === char.toUpperCase();
       const upperChar = char.toUpperCase();
       const index = alphabet.indexOf(upperChar);
