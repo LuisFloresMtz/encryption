@@ -5,12 +5,10 @@ import { Injectable } from '@angular/core';
 })
 export class EncryptionService {
   CesarEncryption(desplacement: number, text: string, alphabet: string): string {
-    // If default alphabet → use ASCII logic
     if (alphabet === 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
       return this.cesarAsciiEncrypt(desplacement, text);
     }
 
-    // Otherwise → custom alphabet mode
     return this.cesarCustomEncrypt(desplacement, text, alphabet);
   }
 
@@ -60,7 +58,6 @@ export class EncryptionService {
         bestResult = decrypted;
       }
 
-      // fallback en caso de no encontrar coincidencias
       if (desplacement === 0) {
         bestResult = decrypted;
       }

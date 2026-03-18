@@ -15,31 +15,23 @@ export class App {
   faLink = faLink;
   faBook = faBook;
 
-  // Default alphabet
   alphabet = signal<string>('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
-  // Selected algorithm
   type = signal<'cesar' | 'atbash'>('cesar');
 
-  // Modal visibility
   showModal = signal(false);
 
-  // Shift value for Cesar
   desplacement = signal<number>(0);
 
-  // Input text
   text = signal<string>('');
 
-  // Output text
   outputText = signal<string>('');
 
   constructor(private encryptionService: EncryptionService) {}
 
-  // Updates selected algorithm
   setType(value: string) {
     this.type.set(value as 'cesar' | 'atbash');
   }
-  // Executes encryption
   encrypt() {
     if (this.type() === 'cesar') {
       this.outputText.set(
@@ -50,7 +42,6 @@ export class App {
     }
   }
 
-  // Executes decryption
   decrypt() {
     if (this.type() === 'cesar') {
       this.outputText.set(this.encryptionService.CesarDecryption(this.text(), this.alphabet()));
@@ -59,7 +50,6 @@ export class App {
     }
   }
 
-  // Updates alphabet
   setAlphabet(value: string) {
     this.alphabet.set(value.toUpperCase());
   }
